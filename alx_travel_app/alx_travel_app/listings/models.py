@@ -1,5 +1,6 @@
 from django.db import models
 import uuid
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 
@@ -10,6 +11,9 @@ def generate_uuid():
     return str(uuid.uuid4())
 
 class Property(models.Model):
+    """
+    Property model
+    """
     property_id = models.UUIDField(primary_key=True, default=generate_uuid)
     name = models.CharField(max_length=250, null=False)
     description = models.TextField(null=False)
@@ -22,6 +26,9 @@ class Property(models.Model):
         return self.name
     
 class Booking(models.Model):
+    """
+    Booking model
+    """
     PENDING = "pending"
     CONFIRMED = "confirmed"
     CANCELED = "canceled"
@@ -42,3 +49,17 @@ class Booking(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f'Property is {self.status}'
+
+class Review(models.Model):
+    """
+    Review model
+    """
+    review_id = models.UUIDField(primary_key=True, default=generate_uuid)
+    property_id = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="review")
+    comment = models.TextField(null=False)
+    rating = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+     
